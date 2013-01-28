@@ -1,0 +1,123 @@
+<html>
+  <head>
+    <title>OpenSSL Web Interface</title>
+    <meta charset="utf-8">
+    <script src="/media/jquery.min.js"></script>
+    <script>
+      function gencert() {
+        $.ajax({
+          type: "POST",
+          url: "",
+          dataType: "json",
+          data: {
+            'action':'gencert',
+            'values': JSON.stringify({
+              certkeylen:          $('#certkeylen').val(),
+              countryName:         $('#countryName').val(),
+              stateOrProvinceName: $('#stateOrProvinceName').val(),
+              localityName:        $('#localityName').val(),
+              organizationName:    $('#organizationName').val(),
+              organizationUnitName:$('#organizationUnitName').val(),
+              commonName:          $('#commonName').val(),
+              emailAddress:        $('#emailAddress').val(),
+            })
+          },
+          success: function (response) {
+            res = response;
+            $('#cert').html('<textarea rows="5" cols="80">' + res.data.cert + '</textarea><br>' +
+                            '<textarea rows="5" cols="80">' + res.data.pkey + '</textarea><br>');
+          }
+        });
+      }
+      function certext() {
+        $.ajax({
+          type: "POST",
+          url: "",
+          data: {
+            'action':'certext',
+            'values': JSON.stringify({
+              text: $('#certext_inp').val()
+            })
+          },
+          dataType: "json",
+          success: function (response) {
+            res = response;
+            res.data = res.data ? res.data : 'Error';
+            $('#certext').html('<textarea rows="5" cols="80">' + res.data + '</textarea>');
+          }
+        });
+      }
+      function getrandom() {
+        $.ajax({
+          type: "POST",
+          url: "",
+          data: {
+            'action':'getrandom',
+            'values': JSON.stringify({
+              keylen: $('#keylen').val()
+            })
+          },
+          dataType: "json",
+          success: function (response) {
+            res = response;
+            res.data = res.data ? res.data : 'Error';
+            $('#random').html('<textarea rows="5" cols="80">' + res.data + '</textarea>');
+          }
+        });
+      }
+    </script>
+    <style>
+    </style>
+  </head>
+  <body>
+    <div id="random">Random key base64 encoded</div>
+    Length: <select id="keylen">
+      <option>8</option>
+      <option>32</option>
+      <option>64</option>
+      <option>128</option>
+    </select>
+    <button id="getrandom" onclick="getrandom();">get random key</button>
+    <br>
+    <br>
+    <div id="cert">Generate SSL Certificate and PK pair</div><br>
+    Keylen: <select id="certkeylen">
+      <option>1024</option>
+      <option>2048</option>
+      <option>4096</option>
+      <option>512</option>
+    </select>
+    <br>
+    <table>
+      <tr>
+        <td>countryName:</td><td><input type="text" id="countryName" /></td>
+      <tr>
+        <tr>
+          <td>stateOrProvinceName:</td><td><input type="text" id="stateOrProvinceName" /><td>
+        </tr>
+        <tr>
+          <td>localityName:</td><td><input type="text" id="localityName" /></td>
+        <tr>
+        <tr>
+          <td>organizationName:</td><td><input type="text" id="organizationName" /></td>
+        </tr>
+        <tr>
+          <td>organizationUnitName:</td><td><input type="text" id="organizationUnitName" /></td>
+        </tr>
+        <tr>
+          <td>commonName:</td><td><input type="text" id="commonName" /></td>
+        </tr>
+        <tr>
+          <td>emailAddress:</td><td><input type="text" id="emailAddress" /></td>
+        </tr>
+    </table>
+    <button id="gencert" onclick="gencert();">generate</button>
+    <br>
+    <br>
+    <div id="certext">Extract certificate text</div>
+    <br>
+    <textarea id="certext_inp" rows="5" cols="80">Paste certificate plain text here</textarea>
+    <br>
+    <button id="certext" onclick="certext();">extract</button>
+  </body>
+</html>
